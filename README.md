@@ -3,7 +3,7 @@
 =======
 # open_weather_provider
 
-A new Flutter project.
+study project from udemy flutter provider
 
 ## Getting Started
 
