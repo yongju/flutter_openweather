@@ -75,4 +75,37 @@ class WeatherApiServices {
       rethrow;
     }
   }
+
+  getGeocoding(double latitude, double longitude) {
+        final Uri uri = Uri(
+      scheme: 'https',
+      host: kApiHost,
+      path: '/geo/1.0/direct',
+      queryParameters: {
+        'q': city,
+        'limit': kLimit,
+        'appid': dotenv.env['APPID'],
+      },
+    );
+
+    try {
+      final http.Response response = await httpClient.get(uri);
+
+      if (response.statusCode != 200) {
+        throw Exception(httpErrorHandler(response));
+      }
+
+      final responseBody = json.decode(response.body);
+      if (responseBody.isEmpty) {
+        throw WeatherException('Cantnot get the location of $city');
+      }
+
+      final directGeocoding = DirectGeocoding.fromJson(responseBody);
+
+      return directGeocoding;
+    } catch (e) {
+      rethrow;
+    }
+
+  }
 }

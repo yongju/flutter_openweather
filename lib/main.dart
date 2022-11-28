@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_state_notifier/flutter_state_notifier.dart';
+import 'package:open_weather_provider/providers/providers.dart';
 import 'package:open_weather_provider/providers/weather/weather_provider.dart';
+import 'package:open_weather_provider/repositories/geolocator_repository.dart';
 import 'package:open_weather_provider/repositories/weather_repository.dart';
 import 'package:open_weather_provider/services/weather_api_services.dart';
 import 'package:provider/provider.dart';
@@ -28,27 +31,40 @@ class MyApp extends StatelessWidget {
             ),
           ),
         ),
-        ChangeNotifierProvider<WeatherProvider>(
-          create: (context) => WeatherProvider(
-            weatherRepository: context.read<WeatherRepository>(),
-          ),
+        Provider<GeolocationRepository>(
+          create: (context) => GeolocationRepository(),
+        ),
+        // ChangeNotifierProvider<WeatherProvider>(
+        //   create: (context) => WeatherProvider(
+        //     weatherRepository: context.read<WeatherRepository>(),
+        //   ),
+        // ),
+        StateNotifierProvider<WeatherProvider, WeatherState>(
+          create: (context) => WeatherProvider(),
+        ),
+        // ChangeNotifierProvider<TempSettingsProvider>(
+        //   create: (context) => TempSettingsProvider(),
+        // ),
+        StateNotifierProvider<TempSettingsProvider, TempSettingsState>(
+          create: (context) => TempSettingsProvider(),
+        ),
+        // ChangeNotifierProxyProvider<WeatherProvider, ThemeProvider>(
+        //   create: (context) => ThemeProvider(),
+        //   update: ((context, value, previous) => previous!..update(value)),
+        // ),
+        // ProxyProvider<WeatherProvider, ThemeProvider>(
+        //   update: (context, value, previous) => ThemeProvider(wp: value),
+        // )
+        StateNotifierProvider<ThemeProvider, ThemeState>(
+          create: (context) => ThemeProvider(),
         ),
       ],
-      child: MaterialApp(
+      builder: (context, _) => MaterialApp(
         title: 'Weather App',
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          // This is the theme of your application.
-          //
-          // Try running your application with "flutter run". You'll see the
-          // application has a blue toolbar. Then, without quitting the app, try
-          // changing the primarySwatch below to Colors.green and then invoke
-          // "hot reload" (press "r" in the console where you ran "flutter run",
-          // or simply save your changes to "hot reload" in a Flutter IDE).
-          // Notice that the counter didn't reset back to zero; the application
-          // is not restarted.
-          primarySwatch: Colors.blue,
-        ),
+        theme: context.watch<ThemeState>().appTheme == AppTheme.light
+            ? ThemeData.light()
+            : ThemeData.dark(),
         home: const HomePage(),
       ),
     );

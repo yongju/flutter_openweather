@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:open_weather_provider/providers/providers.dart';
+import 'package:provider/provider.dart';
 
 class SettingPage extends StatefulWidget {
   const SettingPage({super.key});
@@ -14,8 +16,19 @@ class _SettingPageState extends State<SettingPage> {
       appBar: AppBar(
         title: const Text('Setting'),
       ),
-      body: Center(
-        child: Text('Setting'),
+      body: Padding(
+        padding: EdgeInsets.all(10.0),
+        child: ListTile(
+          title: Text('Temperature Unit'),
+          subtitle: Text('Celsius/Fahrenheit (Default: Celsius)'),
+          trailing: Switch(
+            value:
+                context.watch<TempSettingsState>().tempUnit == TempUnit.celsius,
+            onChanged: (_) => {
+              context.read<TempSettingsProvider>().toggleTempUnit(),
+            },
+          ),
+        ),
       ),
     );
   }
